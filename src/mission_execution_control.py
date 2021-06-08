@@ -21,19 +21,18 @@ def startTask(task, **args):
 def executeTask(task, **args):
   stop_info = {'finished': False, 'result': 'ERROR'}
   start_task_srv = rospy.ServiceProxy('start_task', behavior_coordinator_msgs.srv.StartTask)
-  res = start_task_srv(task=behavior_coordinator_msgs.msg.TaskCommand(name=task, parameters=str(args), priority=2))
-  if not res.ack:
-      print("[ERROR] %s" % res.error_message)
-      return stop_info['finished'], stop_info['result']
-
   def taskStoppedCallback(msg):
     if msg.name == task:
       #print(msg.name)
       stop_info['result'] = msg.termination_cause
       stop_info['finished'] = True
   rospy.Subscriber('task_stopped', behavior_coordinator_msgs.msg.TaskStopped, taskStoppedCallback)
+  res = start_task_srv(task=behavior_coordinator_msgs.msg.TaskCommand(name=task, parameters=str(args), priority=2))
   while(not stop_info['finished']):
     rospy.Rate(30).sleep()
+    if not res.ack:
+      print("[ERROR] %s" % res.error_message)
+      return stop_info['finished'], stop_info['result']
   return stop_info['finished'], stop_info['result']
 
 def stopTask(task):
