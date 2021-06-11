@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 import rospy
 import sys
 import os
@@ -9,7 +9,7 @@ import mission_loader
 
 def setup():
     # Turn off stdout buffering
-    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
 
     rospy.init_node('executive_api_process')
 
